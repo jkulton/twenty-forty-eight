@@ -1,14 +1,14 @@
-<html>
+<html lang="en">
+    <head>
+        <title>2048</title>
+    </head>
     <body autofocus>
         <h2>2048</h2>
         <div class="board"></div>
         <div class="score"></div>
-
         <p class="help">This game only supports keyboard inputs with arrow keys.</p>
-
         <style>
             * { box-sizing: border-box; }
-
             h2 { font-weight: 900 }
 
             body {
@@ -17,7 +17,7 @@
                 align-items: center;
                 justify-content: center;
                 font-size: 1.25rem;
-                font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+                font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Cantarell, 'Open Sans', sans-serif;
                 background: #111;
                 color: #fff;
                 line-height: 4rem;
@@ -65,34 +65,14 @@
             .tile.tile1024 { background: #da38f5; }
             .tile.tile2048 { background: #8946ff; }
         </style>
-
         <script>
-            const NEW_VALUES = [2, 2, 4];
-
-            const VALID_KEYS = [
-                "ArrowUp",
-                "ArrowLeft",
-                "ArrowRight",
-                "ArrowDown",
-            ];
-
-            const TILE_THEMES = {
-                '2': '#b1b1b1',
-                '4': '#82abbf',
-                '8': '#4d98d3',
-                '16': '#5f76f4',
-                '32': '#259e92',
-                '64': '#a2ad34',
-                '128': '#d99838',
-                '256': '#e75c30',
-                '512': '#ec1860',
-                '1024': '#da38f5',
-                '2048': '#8946ff',
-            }
+            const getRandomItem = (list) => list[Math.floor(Math.random() * list.length)];
+            const equalAsJSON = (a, b) => JSON.stringify(a) === JSON.stringify(b);
 
             document.addEventListener('DOMContentLoaded', () => {
                 const gameBoardElement = document.querySelector('.board');
                 const scoreElement = document.querySelector('.score');
+                const NEW_VALUES = [2, 2, 4];
                 const body = document.body;
                 let gameState = getEmptyBoard();
                 let score = 0;
@@ -130,9 +110,9 @@
 
                 function shiftArrayRight(arr) {
                     let temp = arr.filter(x => x !== null);
-                    let result = [];
                     let curr = temp.length - 1;
                     let next = temp.length - 2;
+                    let result = [];
 
                     while (true) {
                         if (temp[curr] === undefined) {
@@ -152,18 +132,12 @@
                     while (result.length < 4) {
                         result.unshift(null);
                     }
-                    
+
                     return result;
                 }
 
-                function boardsAreEqual(boardA, boardB) {
-                    return JSON.stringify(boardA) === JSON.stringify(boardB);
-                }
-
                 function getColumn(board, column) {
-                    return board.reduce((acc, row) => {
-                        return [...acc, row.find((_, index) => index === column)];
-                    }, []);
+                    return board.reduce((acc, row) => [...acc, row.find((_, index) => index === column)], []);
                 }
 
                 function setColumn(board, x, arr) {
@@ -182,7 +156,7 @@
                     for (let row of gameState) {
                         newBoard.push(shiftArrayRight(row))
                     }
-                    if (boardsAreEqual(gameState, newBoard)) {
+                    if (equalAsJSON(gameState, newBoard)) {
                         return false
                     }
                     gameState = newBoard;
@@ -195,7 +169,7 @@
                         let temp = [...row];
                         newBoard.push(shiftArrayRight(temp.reverse()).reverse());
                     }
-                    if (boardsAreEqual(gameState, newBoard)) {
+                    if (equalAsJSON(gameState, newBoard)) {
                         return false
                     }
                     gameState = newBoard;
@@ -209,7 +183,7 @@
                         const newColumn = shiftArrayRight(currentColumn);
                         newBoard = setColumn(newBoard, i, newColumn);
                     }
-                    if (boardsAreEqual(gameState, newBoard)) {
+                    if (equalAsJSON(gameState, newBoard)) {
                         return false
                     }
                     gameState = newBoard;
@@ -223,14 +197,14 @@
                         const newColumn = shiftArrayRight(currentColumn.reverse()).reverse();
                         newBoard = setColumn(newBoard, i, newColumn);
                     }
-                    if (boardsAreEqual(gameState, newBoard)) {
+                    if (equalAsJSON(gameState, newBoard)) {
                         return false
                     }
                     gameState = newBoard;
                     return true;
                 }
 
-                const SHIFT_FUNCTIONS = {
+                const KEYS_TO_SHIFT_FUNCTIONS = {
                     'ArrowRight': shiftBoardRight,
                     'ArrowLeft': shiftBoardLeft,
                     'ArrowUp': shiftBoardUp,
@@ -238,28 +212,14 @@
                 };
 
                 function handleUserInput(e) {
-                    if (!VALID_KEYS.includes(e.key)) {
+                    if (!Object.keys(KEYS_TO_SHIFT_FUNCTIONS).includes(e.key)) {
                         return;
                     }
-
-                    // 1. Apply shift
-                    const validMove = SHIFT_FUNCTIONS[e.key]();
-
-                    // 2. Rerender
-                    renderGameState();
-
-                    // 3. If we had a valid move, add a new value to the board
-                    if (validMove) {
+                    const validMove = KEYS_TO_SHIFT_FUNCTIONS[e.key](); // 1. Apply shift
+                    renderGameState();                                  // 2. Rerender
+                    if (validMove) {                                    // 3. If we had a valid move, add a new value to the board
                         setTimeout(() => addValueToField(), 250)
                     }
-                }
-
-                function handleGameOver() {
-                    // TODO
-                }
-
-                function getRandomItem(list) {
-                    return list[Math.floor(Math.random() * list.length)];
                 }
 
                 function padLeft(val, length) {
@@ -277,8 +237,7 @@
                         return;
                     }
                     const { x, y } = getRandomItem(emptyFields);
-                    const val = getRandomItem(NEW_VALUES);
-                    gameState[y][x] = val;
+                    gameState[y][x] = getRandomItem(NEW_VALUES);
                     renderGameState();
                 }
 
