@@ -1,0 +1,290 @@
+<html>
+    <body autofocus>
+        <h2>2048</h2>
+        <div class="board"></div>
+        <div class="score"></div>
+
+        <p class="help">This game only supports keyboard inputs with arrow keys.</p>
+
+        <style>
+            * { box-sizing: border-box; }
+
+            h2 { font-weight: 900 }
+
+            body {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                font-size: 1.25rem;
+                font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+                background: #111;
+                color: #fff;
+                line-height: 4rem;
+            }
+
+            .board {
+                width: 320px;
+                display: flex;
+                flex-wrap: wrap;
+            }
+
+            .board .tile {
+                font-weight: bold;
+                flex-basis: 20%;
+                margin: 8px;
+                height: 60px;
+                padding: 8px;
+                flex-grow: 1;
+                flex-shrink: 0;
+                border-radius: 4px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                background: #222;
+            }
+
+            .help {
+                padding: 12px 16px;
+                color: #a7a7a7;
+                border-radius: 4px;
+                font-size: 14px;
+                background: #222;
+                line-height: 1rem;
+            }
+
+            .tile.tile2    { background: #b1b1b1; color: #222 }
+            .tile.tile4    { background: #7a7a7a; color: #222 }
+            .tile.tile8    { background: #4d98d3; }
+            .tile.tile16   { background: #5f76f4; }
+            .tile.tile32   { background: #259e92; }
+            .tile.tile64   { background: #f9e95d; color: #222 }
+            .tile.tile128  { background: #f7ac3f; color: #222 }
+            .tile.tile256  { background: #e75c30; }
+            .tile.tile512  { background: #ec1860; }
+            .tile.tile1024 { background: #da38f5; }
+            .tile.tile2048 { background: #8946ff; }
+        </style>
+
+        <script>
+            const NEW_VALUES = [2, 2, 4];
+
+            const VALID_KEYS = [
+                "ArrowUp",
+                "ArrowLeft",
+                "ArrowRight",
+                "ArrowDown",
+            ];
+
+            const TILE_THEMES = {
+                '2': '#b1b1b1',
+                '4': '#82abbf',
+                '8': '#4d98d3',
+                '16': '#5f76f4',
+                '32': '#259e92',
+                '64': '#a2ad34',
+                '128': '#d99838',
+                '256': '#e75c30',
+                '512': '#ec1860',
+                '1024': '#da38f5',
+                '2048': '#8946ff',
+            }
+
+            document.addEventListener('DOMContentLoaded', () => {
+                const gameBoardElement = document.querySelector('.board');
+                const scoreElement = document.querySelector('.score');
+                const body = document.body;
+                let gameState = getEmptyBoard();
+                let score = 0;
+
+                function getEmptyBoard() {
+                    return [
+                        [null, null, null, null],
+                        [null, null, null, null],
+                        [null, null, null, null],
+                        [null, null, null, null],
+                    ];
+                }
+
+                function renderGameState(state) {
+                    let rendered = gameState.map(row => {
+                        return row.map(item => {
+                            return item === null ? '<div class="tile"></div>' : `<div class="tile tile${item}">${item}</div>`
+                        }).join('');
+                    }).join('');
+                    gameBoardElement.innerHTML = rendered;
+                    scoreElement.innerHTML = `Score: ${score}`;
+                }
+
+                function getEmptyFields() {
+                    const emptyFields = [];
+                    for (let row in gameState) {
+                        for (let column in gameState[row]) {
+                            if (gameState[column][row] === null) {
+                                emptyFields.push({ x: row, y: column });
+                            }
+                        }
+                    }
+                    return emptyFields;
+                }
+
+                function shiftArrayRight(arr) {
+                    let temp = arr.filter(x => x !== null);
+                    let result = [];
+                    let curr = temp.length - 1;
+                    let next = temp.length - 2;
+
+                    while (true) {
+                        if (temp[curr] === undefined) {
+                            break;
+                        }
+                        if (temp[curr] === temp[next]) {
+                            result.unshift(temp[curr] + temp[next]);
+                            score += (temp[curr] + temp[next]);
+                            curr -= 2;
+                            next -= 2;
+                        } else {
+                            result.unshift(temp[curr]);
+                            curr -= 1;
+                            next -= 1;
+                        }
+                    }
+                    while (result.length < 4) {
+                        result.unshift(null);
+                    }
+                    
+                    return result;
+                }
+
+                function boardsAreEqual(boardA, boardB) {
+                    return JSON.stringify(boardA) === JSON.stringify(boardB);
+                }
+
+                function getColumn(board, column) {
+                    return board.reduce((acc, row) => {
+                        return [...acc, row.find((_, index) => index === column)];
+                    }, []);
+                }
+
+                function setColumn(board, x, arr) {
+                    let newBoard = [];
+                    for (let row of board) {
+                        newBoard.push([...row]);
+                    }
+                    for (let i = 0; i < arr.length; i += 1) {
+                        newBoard[i][x] = arr[i];
+                    }
+                    return newBoard;
+                }
+
+                function shiftBoardRight() {
+                    let newBoard = [];
+                    for (let row of gameState) {
+                        newBoard.push(shiftArrayRight(row))
+                    }
+                    if (boardsAreEqual(gameState, newBoard)) {
+                        return false
+                    }
+                    gameState = newBoard;
+                    return true;
+                }
+
+                function shiftBoardLeft() {
+                    let newBoard = [];
+                    for (let row of gameState) {
+                        let temp = [...row];
+                        newBoard.push(shiftArrayRight(temp.reverse()).reverse());
+                    }
+                    if (boardsAreEqual(gameState, newBoard)) {
+                        return false
+                    }
+                    gameState = newBoard;
+                    return true;
+                }
+
+                function shiftBoardDown() {
+                    let newBoard = getEmptyBoard();
+                    for (let i = 0; i < gameState[0].length; i += 1) {
+                        const currentColumn = getColumn(gameState, i);
+                        const newColumn = shiftArrayRight(currentColumn);
+                        newBoard = setColumn(newBoard, i, newColumn);
+                    }
+                    if (boardsAreEqual(gameState, newBoard)) {
+                        return false
+                    }
+                    gameState = newBoard;
+                    return true;
+                }
+
+                function shiftBoardUp() {
+                    let newBoard = getEmptyBoard();
+                    for (let i = 0; i < gameState[0].length; i += 1) {
+                        const currentColumn = getColumn(gameState, i);
+                        const newColumn = shiftArrayRight(currentColumn.reverse()).reverse();
+                        newBoard = setColumn(newBoard, i, newColumn);
+                    }
+                    if (boardsAreEqual(gameState, newBoard)) {
+                        return false
+                    }
+                    gameState = newBoard;
+                    return true;
+                }
+
+                const SHIFT_FUNCTIONS = {
+                    'ArrowRight': shiftBoardRight,
+                    'ArrowLeft': shiftBoardLeft,
+                    'ArrowUp': shiftBoardUp,
+                    'ArrowDown': shiftBoardDown,
+                };
+
+                function handleUserInput(e) {
+                    if (!VALID_KEYS.includes(e.key)) {
+                        return;
+                    }
+
+                    // 1. Apply shift
+                    const validMove = SHIFT_FUNCTIONS[e.key]();
+
+                    // 2. Rerender
+                    renderGameState();
+
+                    // 3. If we had a valid move, add a new value to the board
+                    if (validMove) {
+                        setTimeout(() => addValueToField(), 250)
+                    }
+                }
+
+                function handleGameOver() {
+                    // TODO
+                }
+
+                function getRandomItem(list) {
+                    return list[Math.floor(Math.random() * list.length)];
+                }
+
+                function padLeft(val, length) {
+                    let result = val.toString();
+                    while (result.length < length) {
+                        result = ' ' + result;
+                    }
+                    return result;
+                }
+
+                function addValueToField() {
+                    const emptyFields = getEmptyFields();
+                    if (emptyFields.length === 0) {
+                        handleGameOver();
+                        return;
+                    }
+                    const { x, y } = getRandomItem(emptyFields);
+                    const val = getRandomItem(NEW_VALUES);
+                    gameState[y][x] = val;
+                    renderGameState();
+                }
+
+                document.body.onkeyup = handleUserInput;
+                addValueToField();
+            });
+        </script>
+    </body>
+</html>
