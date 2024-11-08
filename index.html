@@ -77,7 +77,6 @@
                 const gameBoardElement = document.querySelector('.board');
                 const scoreElement = document.querySelector('.score');
                 const NEW_VALUES = [2, 2, 4];
-                const body = document.body;
                 let gameState = getEmptyBoard();
                 let score = 0;
 
@@ -214,14 +213,13 @@
                     const validMove = KEYS_TO_SHIFT_FUNCTIONS[e.key](); // 1. Apply shift
                     renderGameState();                                  // 2. Rerender
                     if (validMove) {                                    // 3. If we had a valid move, add a new value to the board
-                        setTimeout(() => addValueToField(), 250)
+                        setTimeout(() => addValueToField(), 200)
                     }
                 }
 
                 function addValueToField() {
                     const emptyFields = getEmptyFields();
                     if (emptyFields.length === 0) {
-                        handleGameOver();
                         return;
                     }
                     const { x, y } = getRandomItem(emptyFields);
