@@ -1,0 +1,94 @@
+:root {
+    --stone-50: oklch(0.985 0.001 106.423);
+    --neutral-50: oklch(0.985 0 0);
+    --neutral-100: oklch(0.97 0 0);
+    --neutral-200: oklch(0.922 0 0);
+    --neutral-800: oklch(0.269 0 0);
+    --neutral-900: oklch(0.205 0 0);
+    --amber-50: oklch(0.987 0.022 95.277);
+    --amber-100: oklch(0.962 0.059 95.617);
+    --stone-200: oklch(0.923 0.003 48.717);
+}
+
+* { box-sizing: border-box; }
+h2 { font-weight: 900 }
+
+body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Cantarell, sans-serif;
+    color: #222;
+    background: var(--stone-50);
+    line-height: 4rem;
+}
+
+.board {
+    width: 430px;
+    display: flex;
+    flex-wrap: wrap;
+    background: var(--amber-50);
+    border-radius: 8px;
+    padding: 8px;
+    border: 2px solid var(--amber-100);
+}
+
+.board .tile {
+    font-weight: bold;
+    flex-basis: 20%;
+    margin: 4px;
+    height: 95px;
+    font-size: 36px;
+    padding: 8px;
+    flex-grow: 1;
+    flex-shrink: 0;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid var(--amber-100);
+    border-bottom-width: 4px;
+}
+
+.help {
+    padding: 12px 16px;
+    color: #222;
+    border-radius: 4px;
+    font-size: 14px;
+    line-height: 1rem;
+    background: var(--neutral-100);
+}
+
+@media (prefers-color-scheme: dark) {
+    body {
+        background: #111;
+        color: #fff;
+    }
+    .board {
+        background: var(--neutral-900);
+        border-color: var(--neutral-900);
+    }
+    .board .tile {
+        border-color: var(--neutral-800);
+        background: var(--neutral-800);
+
+    }
+    .help {
+        background: #222;
+        color: #fff;
+    }
+}
+
+.tile.tile2    { background: oklch(0.962 0.059 95.617); color: #222; border-color: oklch(0.924 0.12 95.746); } /* amber-100 */
+.tile.tile4    { background: oklch(0.924 0.12 95.746); color: #222; border-color: oklch(0.879 0.169 91.605); } /* amber-200 */
+.tile.tile8    { background: oklch(0.852 0.199 91.936); border-color: oklch(0.795 0.184 86.047); } /* yellow-400 */
+.tile.tile16   { background: oklch(0.723 0.219 149.579); border-color: oklch(0.627 0.194 149.214); } /* green-500 */
+.tile.tile32   { background: oklch(0.704 0.14 182.503); border-color: oklch(0.6 0.118 184.704); } /* teal-500 */
+.tile.tile64   { background: oklch(0.685 0.169 237.323); color: #222; border-color: oklch(0.588 0.158 241.966); } /* sky-500 */
+.tile.tile128  { background: oklch(0.585 0.233 277.117); color: #fff; border-color: oklch(0.511 0.262 276.966); } /* indigo-500 */
+.tile.tile256  { background: oklch(0.606 0.25 292.717); color: #fff; border-color: oklch(0.541 0.281 293.009); } /* violet-500 */
+.tile.tile512  { background: oklch(0.667 0.295 322.15); color: #fff; border-color: oklch(0.591 0.293 322.896); } /* fuchsia-500 */
+.tile.tile1024 { background: oklch(0.656 0.241 354.308); color: #fff; border-color: oklch(0.592 0.249 0.584); } /* pink-500 */
+.tile.tile2048 { background: oklch(0.637 0.237 25.331); color: #222; border-color: oklch(0.577 0.245 27.325); } /* red-500 */
