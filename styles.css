@@ -23,9 +23,10 @@ body {
 }
 
 .board {
-    width: 430px;
-    display: flex;
-    flex-wrap: wrap;
+    width: 100%;
+    max-width: 450px;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
     border-radius: 8px;
     padding: 8px;
     background: var(--amber-50);
@@ -33,14 +34,11 @@ body {
 }
 
 .board .tile {
+    line-height: initial;
     font-weight: bold;
-    flex-basis: 20%;
     margin: 4px;
-    height: 95px;
+    aspect-ratio: 1 / 1;
     font-size: 36px;
-    padding: 8px;
-    flex-grow: 1;
-    flex-shrink: 0;
     border-radius: 8px;
     display: flex;
     align-items: center;
